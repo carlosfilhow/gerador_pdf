@@ -1,1 +1,41 @@
+import streamlit as st
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
+def gerar_pdf(nome, idade, profissao):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    largura, altura = A4
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawCentredString(largura / 2, altura - 50, "INSTRUÇÃO DE TRABALHO")
+    c.setFont("Helvetica", 12)
+    c.drawString(50, altura - 100, f"Nome: {nome}")
+    c.drawString(50, altura - 120, f"Idade: {idade}")
+    c.drawString(50, altura - 140, f"Profissão: {profissao}")
+    c.setFont("Helvetica-Oblique", 10)
+    c.drawRightString(largura - 50, 50, "Documento gerado automaticamente.")
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+# Interface
+st.title("Gerador de Instrução de Trabalho (PDF)")
+
+nome = st.text_input("Nome")
+idade = st.text_input("Idade")
+profissao = st.text_input("Profissão")
+
+if st.button("Gerar PDF"):
+    if nome and idade and profissao:
+        pdf_file = gerar_pdf(nome, idade, profissao)
+        st.success("PDF gerado com sucesso!")
+        st.download_button(label="📥 Baixar PDF",
+                           data=pdf_file,
+                           file_name="instrucao_trabalho.pdf",
+                           mime="application/pdf")
+    else:
+        st.warning("Por favor, preencha todos os campos.")
 
